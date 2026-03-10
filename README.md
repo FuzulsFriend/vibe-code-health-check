@@ -3,7 +3,6 @@
 # Vibe Code Health Check
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-green)](https://code.claude.com)
 [![SKILL.md](https://img.shields.io/badge/SKILL.md-open%20standard-green)](SKILL.md)
 
 Grade your code A to F. Get plain English fixes. No security background needed.
@@ -196,4 +195,4 @@ MIT
 
 ---
 
-*Made by [FuzulsFriend](https://github.com/FuzulsFriend) · Built with [Claude Code](https://code.claude.com)*
+*Made by [FuzulsFriend](https://github.com/FuzulsFriend)*
