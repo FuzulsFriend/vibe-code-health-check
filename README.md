@@ -1,52 +1,61 @@
+![Vibe Code Health Check](assets/banner.svg)
+
 # Vibe Code Health Check
 
-> A Claude Code skill that scans any codebase and grades it A through F across 6 health dimensions — with plain-English fixes, not developer jargon.
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-green)](https://code.claude.com)
+[![SKILL.md](https://img.shields.io/badge/SKILL.md-open%20standard-green)](SKILL.md)
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Claude Code](https://img.shields.io/badge/Claude%20Code-Skill-blue)](https://code.claude.com)
-[![SKILL.md](https://img.shields.io/badge/SKILL.md-open%20standard-purple)](SKILL.md)
+Grade your code A to F. Get plain English fixes. No security background needed.
 
 ---
 
-## What it does
+## You don't need to be a security expert to fix the issues
 
-Built for vibe coders, indie hackers, and solo founders who ship fast and want to know: **is this safe to launch?**
+This skill reads your code and explains every finding in plain English. "Your security header is set to report-only mode: it logs violations but doesn't block anything" is something anyone can act on. So is "Your database password is written directly in the code." You get a letter grade, a numbered list of issues, and exact file paths to fix them. No jargon. No guesswork.
 
-Scans your codebase across 6 health dimensions, runs the actual build, checks for real security issues, and explains everything in plain English — no senior dev required.
+---
 
-**6 health dimensions:**
+## What it checks
 
 | Dimension | Weight | What it checks |
-|-----------|--------|---------------|
+|-----------|--------|----------------|
 | Security | 25% | Exposed secrets, unprotected routes, injection vulnerabilities |
-| Error Handling | 20% | Missing try/catch, unhandled promises, crash-prone code |
+| Error Handling | 20% | Missing try/catch, unhandled promises, code that crashes silently |
 | Code Structure | 15% | File size, duplication, naming, organization |
 | Performance | 15% | Bundle size, waterfall fetches, unoptimized assets |
-| Deploy Readiness | 15% | Build pass/fail, env config, .gitignore coverage |
+| Deploy Readiness | 15% | Build pass/fail, environment config, .gitignore coverage |
 | UX Basics | 10% | Loading states, error messages, mobile responsiveness |
 
-Stack-aware checks for: **React/Next.js, Python/Flask/FastAPI, Supabase, Firebase.**
+---
+
+## Grading scale
+
+| Grade | Score | What it means |
+|-------|-------|---------------|
+| A | 90-100 | Production-ready. Ship it. |
+| B | 80-89 | Almost there. Fix the warnings and you're good. |
+| C | 70-79 | Functional but risky. Fix critical issues first. |
+| D | 60-69 | Significant problems. Not safe to deploy yet. |
+| F | Below 60 | Major security or stability issues. Do not ship. |
+
+Side projects get adjusted weights: security stays high, structure and deployment are weighted lighter.
 
 ---
 
 ## Install
 
 ```bash
-npx skills add FuzulsFriend/vibe-code-health-check
+git clone https://github.com/FuzulsFriend/vibe-code-health-check ~/.claude/skills/vibe-code-health-check
 ```
 
-Or manually: copy `SKILL.md` into your `.claude/skills/` directory.
-
-**Recommended for live testing:**
-```bash
-npx skills add lackeyjb/playwright-skill --skill playwright-skill
-```
+Or copy `SKILL.md` directly into your `.claude/skills/` directory.
 
 ---
 
 ## Usage
 
-Just ask Claude:
+Ask Claude:
 
 ```
 Check my code
@@ -54,10 +63,6 @@ Check my code
 
 ```
 Is my app ready to ship?
-```
-
-```
-Vibe check my codebase
 ```
 
 ```
@@ -85,16 +90,67 @@ BREAKDOWN:
   Deploy Readiness: [█████████░]  90/100
   UX Basics:        [████████░░]  84/100
 
-CRITICAL — Fix these before anyone uses your app:
-1. "Your CSP header is in report-only mode..."
+CRITICAL (2) — Fix these before anyone uses your app:
+1. "Your CSP header is in report-only mode: it logs violations but blocks nothing."
    Fix: app/api/middleware.ts — change Content-Security-Policy-Report-Only to Content-Security-Policy
 
-WARNINGS — Fix these soon:
-2. "434 places in your code log debug info..."
+2. "Your Stripe webhook accepts requests without verifying the signature."
+   Fix: api/webhooks/stripe.ts — add Stripe.webhooks.constructEvent() verification
+
+WARNINGS (3) — Fix these soon:
+3. "434 places in your code log debug info to the browser console."
    Fix: Add ESLint rule: no-console
 ```
 
-Plus: a visual browser report with animated grade badge, severity-colored finding cards with copy-to-clipboard file paths, stats dashboard, and path-to-next-grade timeline.
+Plus a visual browser report with your grade badge, animated health bars, severity-color-coded findings with copy-to-clipboard file paths, a stats dashboard, and a step-by-step path to the next grade.
+
+---
+
+## Built on industry security and quality standards
+
+Every finding in this skill traces back to a published standard maintained by the security or engineering community. That means the findings are objective, not opinions.
+
+1. **[OWASP Top 10](https://owasp.org/www-project-top-ten/)** - The Open Web Application Security Project publishes the 10 most critical web application security risks. This list is updated by security professionals worldwide and is the most widely referenced standard for web security.
+
+2. **[OWASP ASVS](https://owasp.org/www-project-application-security-verification-standard/)** - The Application Security Verification Standard is a framework of security requirements for designing, developing, and testing secure web applications. It gives this skill a structured checklist beyond just the top 10 risks.
+
+3. **[Core Web Vitals](https://web.dev/vitals/)** - Google's official performance metrics tied to real user experience. Poor scores hurt your SEO ranking and reduce conversion rates.
+
+4. **[TypeScript Strict Mode](https://www.typescriptlang.org/tsconfig#strict)** - Microsoft's strictest TypeScript configuration. Enabling it catches runtime errors at compile time, before users ever see them.
+
+5. **[React Best Practices](https://react.dev/)** - Error boundaries, key props, performance optimization, and component design patterns from the official React documentation. These prevent the most common React bugs in production.
+
+6. **[Next.js Best Practices](https://nextjs.org/docs)** - Image optimization, bundle splitting, server/client component boundaries, and deployment guidelines maintained by the Next.js team at Vercel.
+
+7. **[npm audit](https://docs.npmjs.com/cli/v10/commands/npm-audit)** - Automated vulnerability detection that checks your dependencies against the npm security advisory database. Catches known vulnerabilities in packages you didn't write.
+
+---
+
+## What it catches (from real audits)
+
+- API keys or secrets committed in source code
+- Admin routes with no authentication
+- SQL injection vulnerabilities
+- Unhandled promise rejections that crash silently
+- Missing error boundaries in React
+- CSP headers in report-only mode instead of enforced
+- Webhook endpoints that accept requests without signature verification
+- Test login endpoints deployed to production
+- Fragile import workarounds that break when someone "cleans up" the code
+- Files over 500 lines doing too many things at once
+- `SELECT *` queries that pull entire tables
+- 434 console.logs scattered through production code
+
+---
+
+## Stack-aware analysis
+
+The skill detects your stack automatically and applies the right checks for it.
+
+- **Next.js / React** - Image optimization, server/client component boundaries, bundle size, React error boundaries
+- **Python / Flask / FastAPI** - Route authentication, input validation, debug mode in production
+- **Supabase** - Row Level Security policies, exposed service keys, unauthenticated queries
+- **Firebase** - Security rules coverage, client-side data exposure, unauthenticated reads
 
 ---
 
@@ -104,26 +160,28 @@ Plus: a visual browser report with animated grade badge, severity-colored findin
 vibe-code-health-check/
 ├── SKILL.md                             # Main skill instructions
 ├── assets/
+│   ├── banner.svg                       # Repository banner
+│   ├── preview.png                      # Report preview screenshot
 │   ├── report-template.md               # Text report template
-│   └── report-ui.html                   # Visual browser report (health theme)
+│   └── report-ui.html                   # Visual browser report
 └── references/
-    ├── scoring-rubric.md                # Exact criteria per dimension
+    ├── scoring-rubric.md                # Exact scoring criteria per dimension
     ├── security-patterns.md             # 8 vulnerability types with examples
     ├── react-nextjs-checks.md           # React/Next.js specific checks
     ├── python-flask-checks.md           # Python/Flask/FastAPI checks
-    ├── supabase-firebase-checks.md      # BaaS security gotchas + positive credit
+    ├── supabase-firebase-checks.md      # BaaS security gotchas and positive credit
     ├── error-handling-rules.md          # Error handling patterns with code examples
     ├── performance-rules.md             # 6 performance rules with examples
-    └── grade-thresholds.md             # What each grade (A–F) looks like
+    └── grade-thresholds.md              # What each grade (A-F) looks like
 ```
 
 ---
 
-## Works with
+## Works best with
 
-- **Agent Teams mode** — all 6 checks run in parallel
-- **Playwright CLI** — live app testing as a real user
-- **Chrome DevTools MCP** — console errors + page speed
+- **[Playwright CLI](https://github.com/lackeyjb/playwright-skill)** - Live browser testing catches issues static analysis misses
+- **Chrome DevTools MCP** - Console errors and real page speed from a running browser
+- **Agent Teams** - All 6 dimensions run in parallel for faster audits
 
 Enable Agent Teams:
 ```bash
@@ -132,41 +190,10 @@ export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
 
 ---
 
-## Grading scale
-
-| Grade | Score | What it means |
-|-------|-------|--------------|
-| A | 90–100 | Production-ready. Ship it. |
-| B | 80–89 | Almost there. Fix the warnings and you're good. |
-| C | 70–79 | Functional but risky. Fix critical issues first. |
-| D | 60–69 | Significant problems. Not safe to deploy yet. |
-| F | Below 60 | Major security or stability issues. |
-
-Side projects get adjusted weights — security stays high, structure and deployment are weighted lighter.
-
----
-
-## What it catches (based on real audits)
-
-- API keys or secrets committed in source code
-- Admin routes without authentication
-- SQL injection vulnerabilities
-- Unhandled promise rejections
-- Missing error boundaries in React
-- CSP headers in report-only mode instead of enforced
-- Unverified webhook signatures
-- Test login endpoints deployed to production
-- Fragile import workarounds that will break if "cleaned up"
-- Files over 500 lines doing too many things
-- `SELECT *` queries on large tables
-- 434 console.logs scattered in production code
-
----
-
 ## License
 
-MIT — use it, fork it, improve it, share it.
+MIT
 
 ---
 
-*Built with the [SKILL.md open standard](https://github.com/FuzulsFriend/vibe-code-health-check/blob/main/SKILL.md) — works across Claude Code, Codex CLI, Gemini CLI, and 15+ other AI coding assistants.*
+*Made by [FuzulsFriend](https://github.com/FuzulsFriend) · Built with [Claude Code](https://code.claude.com)*

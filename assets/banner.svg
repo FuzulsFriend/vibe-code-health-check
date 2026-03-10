@@ -1,0 +1,153 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 640" width="1280" height="640">
+  <defs>
+    <pattern id="dots" x="0" y="0" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="1" cy="1" r="1" fill="#475569" opacity="0.35"/>
+    </pattern>
+    <linearGradient id="accentGrad" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#22c55e"/>
+      <stop offset="100%" stop-color="#4ade80"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1280" height="640" fill="#0f172a"/>
+  <rect width="1280" height="640" fill="url(#dots)"/>
+
+  <!-- Top accent bar -->
+  <rect width="1280" height="3" fill="url(#accentGrad)"/>
+
+  <!-- ── LEFT PANEL ── -->
+
+  <!-- Category label -->
+  <text x="60" y="88" font-family="system-ui,-apple-system,sans-serif" font-size="11" font-weight="700" fill="#22c55e" letter-spacing="3">VIBE CODE HEALTH CHECK</text>
+
+  <!-- Main headline -->
+  <text x="60" y="152" font-family="system-ui,-apple-system,sans-serif" font-size="52" font-weight="800" fill="#f1f5f9">Is your code ready</text>
+  <text x="60" y="216" font-family="system-ui,-apple-system,sans-serif" font-size="52" font-weight="800" fill="#f1f5f9">to <tspan fill="#22c55e">ship</tspan>?</text>
+
+  <!-- Subtitle -->
+  <text x="60" y="272" font-family="system-ui,-apple-system,sans-serif" font-size="18" fill="#94a3b8">Graded A to F. Explained in plain English.</text>
+  <text x="60" y="300" font-family="system-ui,-apple-system,sans-serif" font-size="18" fill="#94a3b8">No senior dev needed to understand the report.</text>
+
+  <!-- Stack chips -->
+  <text x="60" y="348" font-family="system-ui,-apple-system,sans-serif" font-size="13" fill="#64748b">Stack-aware checks for:</text>
+
+  <rect x="60" y="360" width="82" height="28" rx="14" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="101" y="379" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#f1f5f9" text-anchor="middle">Next.js</text>
+
+  <rect x="152" y="360" width="98" height="28" rx="14" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="201" y="379" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#f1f5f9" text-anchor="middle">TypeScript</text>
+
+  <rect x="260" y="360" width="90" height="28" rx="14" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="305" y="379" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#f1f5f9" text-anchor="middle">Supabase</text>
+
+  <rect x="360" y="360" width="82" height="28" rx="14" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="401" y="379" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#f1f5f9" text-anchor="middle">Python</text>
+
+  <rect x="452" y="360" width="82" height="28" rx="14" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+  <text x="493" y="379" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#f1f5f9" text-anchor="middle">Firebase</text>
+
+  <!-- Framework line -->
+  <text x="60" y="468" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#475569">Built on</text>
+  <text x="109" y="468" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#64748b">OWASP Top 10 · Core Web Vitals · React Best Practices · TypeScript Strict</text>
+
+  <!-- ── RIGHT PANEL — Health Report Card ── -->
+  <rect x="660" y="72" width="560" height="500" rx="14" fill="#1e293b" stroke="#334155" stroke-width="1"/>
+
+  <!-- Card header -->
+  <rect x="660" y="72" width="560" height="48" rx="0" fill="#071a0f"/>
+  <rect x="660" y="72" width="560" height="14" rx="14" fill="#071a0f"/>
+  <rect x="660" y="100" width="560" height="20" fill="#071a0f"/>
+  <text x="680" y="103" font-family="system-ui,-apple-system,sans-serif" font-size="11" fill="#166534" letter-spacing="2">HEALTH REPORT · markit-app</text>
+
+  <!-- Build passed badge -->
+  <rect x="1060" y="84" width="140" height="28" rx="14" fill="#052e16" stroke="#166534" stroke-width="1"/>
+  <text x="1130" y="103" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#22c55e" text-anchor="middle">✓ Build passed</text>
+
+  <!-- Big grade circle -->
+  <circle cx="780" cy="250" r="88" fill="none" stroke="#052e16" stroke-width="12"/>
+  <circle cx="780" cy="250" r="88" fill="none" stroke="#22c55e" stroke-width="12"
+    stroke-dasharray="553" stroke-dashoffset="99"
+    stroke-linecap="round"
+    transform="rotate(-90 780 250)"/>
+  <text x="780" y="234" font-family="system-ui,-apple-system,sans-serif" font-size="64" font-weight="800" fill="#22c55e" text-anchor="middle">B</text>
+  <text x="780" y="270" font-family="system-ui,-apple-system,sans-serif" font-size="16" fill="#64748b" text-anchor="middle">82 / 100</text>
+
+  <!-- Dimension bars (right side) -->
+  <!-- Security 78 -->
+  <text x="920" y="140" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#94a3b8">Security</text>
+  <text x="1000" y="140" font-family="system-ui,-apple-system,sans-serif" font-size="10" fill="#64748b">25%</text>
+  <rect x="920" y="148" width="260" height="8" rx="4" fill="#0f172a"/>
+  <rect x="920" y="148" width="203" height="8" rx="4" fill="#f59e0b"/>
+  <text x="1190" y="157" font-family="system-ui,-apple-system,sans-serif" font-size="11" fill="#f59e0b" text-anchor="end">78</text>
+
+  <!-- Error Handling 80 -->
+  <text x="920" y="178" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#94a3b8">Error Handling</text>
+  <text x="1040" y="178" font-family="system-ui,-apple-system,sans-serif" font-size="10" fill="#64748b">20%</text>
+  <rect x="920" y="186" width="260" height="8" rx="4" fill="#0f172a"/>
+  <rect x="920" y="186" width="208" height="8" rx="4" fill="#3b82f6"/>
+  <text x="1190" y="195" font-family="system-ui,-apple-system,sans-serif" font-size="11" fill="#3b82f6" text-anchor="end">80</text>
+
+  <!-- Code Structure 72 -->
+  <text x="920" y="216" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#94a3b8">Code Structure</text>
+  <text x="1040" y="216" font-family="system-ui,-apple-system,sans-serif" font-size="10" fill="#64748b">15%</text>
+  <rect x="920" y="224" width="260" height="8" rx="4" fill="#0f172a"/>
+  <rect x="920" y="224" width="187" height="8" rx="4" fill="#f59e0b"/>
+  <text x="1190" y="233" font-family="system-ui,-apple-system,sans-serif" font-size="11" fill="#f59e0b" text-anchor="end">72</text>
+
+  <!-- Performance 85 -->
+  <text x="920" y="254" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#94a3b8">Performance</text>
+  <text x="1010" y="254" font-family="system-ui,-apple-system,sans-serif" font-size="10" fill="#64748b">15%</text>
+  <rect x="920" y="262" width="260" height="8" rx="4" fill="#0f172a"/>
+  <rect x="920" y="262" width="221" height="8" rx="4" fill="#22c55e"/>
+  <text x="1190" y="271" font-family="system-ui,-apple-system,sans-serif" font-size="11" fill="#22c55e" text-anchor="end">85</text>
+
+  <!-- Deploy 90 -->
+  <text x="920" y="292" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#94a3b8">Deploy Readiness</text>
+  <text x="1060" y="292" font-family="system-ui,-apple-system,sans-serif" font-size="10" fill="#64748b">15%</text>
+  <rect x="920" y="300" width="260" height="8" rx="4" fill="#0f172a"/>
+  <rect x="920" y="300" width="234" height="8" rx="4" fill="#22c55e"/>
+  <text x="1190" y="309" font-family="system-ui,-apple-system,sans-serif" font-size="11" fill="#22c55e" text-anchor="end">90</text>
+
+  <!-- UX 84 -->
+  <text x="920" y="330" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#94a3b8">UX Basics</text>
+  <text x="990" y="330" font-family="system-ui,-apple-system,sans-serif" font-size="10" fill="#64748b">10%</text>
+  <rect x="920" y="338" width="260" height="8" rx="4" fill="#0f172a"/>
+  <rect x="920" y="338" width="218" height="8" rx="4" fill="#22c55e"/>
+  <text x="1190" y="347" font-family="system-ui,-apple-system,sans-serif" font-size="11" fill="#22c55e" text-anchor="end">84</text>
+
+  <!-- Divider -->
+  <line x1="680" y1="376" x2="1200" y2="376" stroke="#334155" stroke-width="1"/>
+
+  <!-- Critical finding preview -->
+  <rect x="680" y="390" width="500" height="56" rx="8" fill="#150a0a" stroke="#7f1d1d" stroke-width="1"/>
+  <rect x="680" y="390" width="4" height="56" rx="2" fill="#ef4444"/>
+  <rect x="684" y="394" width="68" height="20" rx="10" fill="#7f1d1d"/>
+  <text x="718" y="408" font-family="system-ui,-apple-system,sans-serif" font-size="11" fill="#fca5a5" text-anchor="middle">CRITICAL</text>
+  <text x="762" y="408" font-family="system-ui,-apple-system,sans-serif" font-size="12" font-weight="600" fill="#fca5a5">CSP header is in report-only mode</text>
+  <text x="684" y="433" font-family="system-ui,-apple-system,sans-serif" font-size="11" fill="#64748b">Fix: app/middleware.ts · 30 min · Security: 78 → 90</text>
+
+  <!-- Stats row -->
+  <text x="680" y="478" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#64748b">Code stats:</text>
+  <text x="754" y="478" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#ef4444" font-weight="600">434</text>
+  <text x="784" y="478" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#64748b">console.logs  ·</text>
+  <text x="892" y="478" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#f59e0b" font-weight="600">7</text>
+  <text x="906" y="478" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#64748b">oversized files  ·</text>
+  <text x="1022" y="478" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#f59e0b" font-weight="600">15</text>
+  <text x="1040" y="478" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#64748b">SELECT *  ·</text>
+  <text x="1108" y="478" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#f59e0b" font-weight="600">27</text>
+  <text x="1124" y="478" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#64748b">raw imgs</text>
+
+  <!-- Path to A -->
+  <text x="680" y="510" font-family="system-ui,-apple-system,sans-serif" font-size="13" fill="#64748b">Path to grade A:</text>
+  <text x="680" y="535" font-family="system-ui,-apple-system,sans-serif" font-size="20" font-weight="800" fill="#22c55e">B</text>
+  <text x="706" y="535" font-family="system-ui,-apple-system,sans-serif" font-size="16" fill="#334155"> ——→ </text>
+  <text x="756" y="535" font-family="system-ui,-apple-system,sans-serif" font-size="20" font-weight="800" fill="#4ade80">A</text>
+  <text x="778" y="535" font-family="system-ui,-apple-system,sans-serif" font-size="13" fill="#64748b">  in 6 hours  ·  projected 91 / 100</text>
+
+  <!-- ── FOOTER ── -->
+  <line x1="0" y1="598" x2="1280" y2="598" stroke="#1e293b" stroke-width="1"/>
+  <text x="60" y="622" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#334155">by</text>
+  <text x="79" y="622" font-family="system-ui,-apple-system,sans-serif" font-size="12" font-weight="600" fill="#22c55e">FuzulsFriend</text>
+  <text x="1220" y="622" font-family="system-ui,-apple-system,sans-serif" font-size="12" fill="#334155" text-anchor="end">Claude Code Skill · MIT License</text>
+</svg>
