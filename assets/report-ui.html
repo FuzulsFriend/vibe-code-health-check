@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vibe Code Health Check Report</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0f172a;
+    --card: #1e293b;
+    --border: #334155;
+    --text: #f1f5f9;
+    --text-secondary: #94a3b8;
+    --accent: #22c55e;
+    --accent-dim: rgba(34, 197, 94, 0.15);
+    --warning: #f59e0b;
+    --warning-dim: rgba(245, 158, 11, 0.1);
+    --critical: #ef4444;
+    --critical-dim: rgba(239, 68, 68, 0.08);
+    --suggestion: #3b82f6;
+    --suggestion-dim: rgba(59, 130, 246, 0.1);
+    --orange: #f97316;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  body {
+    font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    padding: 24px 16px 64px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container {
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* Fade-in animation */
+  .fade-in-up {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+  }
+  .fade-in-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+
+  /* Header */
+  .header { text-align: center; padding: 40px 24px 32px; }
+  .header-title {
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    background: linear-gradient(90deg, #22c55e, #4ade80, #22c55e);
+    background-size: 200% 100%;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    animation: pulseGradient 3s ease-in-out infinite;
+  }
+  @keyframes pulseGradient {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
+  .header-project {
+    font-size: 32px;
+    font-weight: 800;
+    margin: 8px 0 16px;
+  }
+  .stack-pills { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 16px; }
+  .pill {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+    background: var(--accent-dim);
+    color: var(--accent);
+    border: 1px solid rgba(34, 197, 94, 0.3);
+  }
+  .stats-bar {
+    display: flex;
+    gap: 24px;
+    justify-content: center;
+    flex-wrap: wrap;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .stats-bar span { white-space: nowrap; }
+  .meta-line {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 8px;
+  }
+
+  /* Grade Hero */
+  .grade-hero {
+    text-align: center;
+    padding: 48px 24px;
+  }
+  .grade-circle-wrap {
+    display: inline-block;
+    position: relative;
+  }
+  .grade-svg { width: 180px; height: 180px; }
+  .grade-ring {
+    fill: none;
+    stroke-width: 6;
+    stroke: var(--border);
+  }
+  .grade-ring-fill {
+    fill: none;
+    stroke-width: 6;
+    stroke-linecap: round;
+    transform: rotate(-90deg);
+    transform-origin: center;
+    transition: stroke-dashoffset 1.5s ease;
+  }
+  .grade-letter {
+    font-size: 72px;
+    font-weight: 900;
+    fill: var(--text);
+  }
+  @keyframes gradePulse {
+    0%, 100% { opacity: 0; }
+    50% { opacity: 0.15; }
+  }
+  .grade-pulse {
+    fill: none;
+    stroke-width: 8;
+    opacity: 0;
+    animation: gradePulse 2s ease-in-out infinite;
+  }
+  .grade-score {
+    font-size: 24px;
+    font-weight: 700;
+    margin-top: 12px;
+  }
+  .grade-score span { color: var(--text-secondary); font-weight: 400; }
+
+  /* Build */
+  .build-status {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 16px;
+    font-weight: 600;
+  }
+  .build-icon { font-size: 24px; }
+  .build-cmd {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    margin-top: 8px;
+  }
+  .build-errors {
+    margin-top: 12px;
+    background: #0f172a;
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    color: var(--critical);
+    max-height: 300px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+  .build-warnings {
+    margin-top: 8px;
+    font-size: 13px;
+    color: var(--warning);
+  }
+
+  /* Dimensions */
+  .dim-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+    flex-wrap: wrap;
+  }
+  .dim-name {
+    width: 140px;
+    font-size: 14px;
+    font-weight: 600;
+    flex-shrink: 0;
+  }
+  .dim-weight {
+    font-size: 11px;
+    color: var(--text-secondary);
+    width: 36px;
+    text-align: right;
+    flex-shrink: 0;
+  }
+  .dim-bar-wrap {
+    flex: 1;
+    min-width: 120px;
+    height: 10px;
+    background: rgba(255,255,255,0.06);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .dim-bar {
+    height: 100%;
+    border-radius: 999px;
+    width: 0;
+    transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .dim-score {
+    width: 52px;
+    text-align: right;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .dim-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--critical);
+    flex-shrink: 0;
+  }
+
+  /* Findings */
+  .findings-section { margin-bottom: 32px; }
+  .findings-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 16px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .findings-header .chevron {
+    transition: transform 0.2s;
+    font-size: 14px;
+  }
+  .findings-header.collapsed .chevron {
+    transform: rotate(-90deg);
+  }
+  .findings-count {
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 999px;
+  }
+  .findings-list { display: flex; flex-direction: column; gap: 12px; }
+  .findings-list.collapsed { display: none; }
+
+  .finding-card {
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    border-left: 4px solid;
+  }
+  .finding-card.critical {
+    background: var(--critical-dim);
+    border-left-color: var(--critical);
+  }
+  .finding-card.warning {
+    background: var(--warning-dim);
+    border-left-color: var(--warning);
+  }
+  .finding-card.suggestion {
+    background: var(--suggestion-dim);
+    border-left-color: var(--suggestion);
+  }
+  .finding-num {
+    font-size: 12px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .finding-title {
+    font-size: 15px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+  .finding-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+  }
+  .finding-file {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--text-secondary);
+    background: rgba(255,255,255,0.05);
+    padding: 3px 8px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 8px;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .finding-file:hover { background: rgba(255,255,255,0.1); }
+  .finding-file .copy-icon { font-size: 11px; flex-shrink: 0; }
+  .finding-fix {
+    font-size: 13px;
+    padding: 8px 12px;
+    background: rgba(34, 197, 94, 0.08);
+    border-radius: 6px;
+    border: 1px solid rgba(34, 197, 94, 0.15);
+    margin-bottom: 8px;
+  }
+  .finding-fix strong { color: var(--accent); }
+  .effort-pill {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 10px;
+    border-radius: 999px;
+    background: rgba(255,255,255,0.06);
+    color: var(--text-secondary);
+  }
+
+  /* Stats Grid */
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .stat-card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    padding: 16px;
+    text-align: center;
+  }
+  .stat-icon { font-size: 24px; margin-bottom: 4px; }
+  .stat-number { font-size: 28px; font-weight: 800; }
+  .stat-label { font-size: 12px; color: var(--text-secondary); }
+  .stat-list {
+    font-size: 12px;
+    color: var(--text-secondary);
+    text-align: left;
+    margin-top: 8px;
+    max-height: 120px;
+    overflow-y: auto;
+  }
+  .stat-list div {
+    display: flex;
+    justify-content: space-between;
+    padding: 2px 0;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+  }
+
+  /* Live Test */
+  .live-url {
+    color: var(--accent);
+    text-decoration: none;
+    font-weight: 600;
+  }
+  .live-url:hover { text-decoration: underline; }
+  .live-obs { margin: 12px 0; }
+  .live-obs li {
+    font-size: 13px;
+    color: var(--text-secondary);
+    margin-bottom: 4px;
+    list-style: none;
+    padding-left: 20px;
+    position: relative;
+  }
+  .live-obs li::before {
+    content: '>';
+    position: absolute;
+    left: 0;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .live-console {
+    background: #0f172a;
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 12px;
+    color: var(--critical);
+    margin-top: 12px;
+    max-height: 200px;
+    overflow-y: auto;
+    white-space: pre-wrap;
+  }
+  .live-none {
+    font-size: 13px;
+    color: var(--text-secondary);
+    font-style: italic;
+  }
+
+  /* Path to Next Grade */
+  .path-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    flex-wrap: wrap;
+  }
+  .path-grade {
+    font-size: 28px;
+    font-weight: 900;
+    padding: 4px 16px;
+    border-radius: var(--radius-sm);
+  }
+  .path-arrow { font-size: 20px; color: var(--text-secondary); }
+  .path-steps { position: relative; padding-left: 24px; }
+  .path-steps::before {
+    content: '';
+    position: absolute;
+    left: 7px;
+    top: 8px;
+    bottom: 8px;
+    width: 2px;
+    background: var(--border);
+  }
+  .path-step {
+    position: relative;
+    margin-bottom: 20px;
+    padding-left: 20px;
+  }
+  .path-step::before {
+    content: '';
+    position: absolute;
+    left: -20px;
+    top: 8px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+  .path-action { font-size: 14px; font-weight: 600; }
+  .path-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    gap: 16px;
+    margin-top: 4px;
+    flex-wrap: wrap;
+  }
+  .path-summary {
+    margin-top: 24px;
+    padding: 16px;
+    background: var(--accent-dim);
+    border-radius: var(--radius-sm);
+    border: 1px solid rgba(34, 197, 94, 0.2);
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+    justify-content: center;
+    text-align: center;
+  }
+  .path-summary-item strong { display: block; font-size: 18px; }
+
+  /* Footer */
+  .footer {
+    text-align: center;
+    padding: 32px 0 16px;
+    font-size: 13px;
+    color: var(--text-secondary);
+  }
+  .footer a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .footer a:hover { text-decoration: underline; }
+
+  /* Section title */
+  .section-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* Toast for copy */
+  .copy-toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--card);
+    color: var(--text);
+    padding: 8px 20px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    border: 1px solid var(--border);
+    transition: transform 0.3s ease;
+    z-index: 999;
+  }
+  .copy-toast.show {
+    transform: translateX(-50%) translateY(0);
+  }
+
+  /* Print styles */
+  @media print {
+    body { background: #fff; color: #000; padding: 0; }
+    .card { border-color: #ddd; background: #f9f9f9; }
+    .header-title { -webkit-text-fill-color: #22c55e; color: #22c55e; }
+    .dim-bar-wrap { background: #eee; }
+    .finding-card { break-inside: avoid; }
+    .copy-toast { display: none; }
+    .finding-file .copy-icon { display: none; }
+  }
+
+  /* Mobile */
+  @media (max-width: 600px) {
+    .header-project { font-size: 24px; }
+    .grade-svg { width: 140px; height: 140px; }
+    .grade-letter { font-size: 56px; }
+    .dim-name { width: 100px; font-size: 13px; }
+    .dim-row { gap: 8px; }
+    .stats-bar { gap: 12px; font-size: 12px; }
+    .path-header { justify-content: center; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+  }
+</style>
+</head>
+<body>
+<div class="container" id="report">
+  <!-- Populated by JS -->
+</div>
+<div class="copy-toast" id="copyToast">Copied to clipboard</div>
+
+<script id="report-data" type="application/json">{{REPORT_DATA}}</script>
+
+<script>
+(function() {
+  const data = JSON.parse(document.getElementById('report-data').textContent);
+  const $ = (sel) => document.querySelector(sel);
+  const el = (tag, cls, html) => {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html !== undefined) e.innerHTML = html;
+    return e;
+  };
+
+  function scoreColor(s) {
+    if (s >= 90) return 'var(--accent)';
+    if (s >= 80) return 'var(--suggestion)';
+    if (s >= 70) return 'var(--warning)';
+    if (s >= 60) return 'var(--orange)';
+    return 'var(--critical)';
+  }
+
+  function gradeColor(g) {
+    const m = { A: 'var(--accent)', B: 'var(--suggestion)', C: 'var(--warning)', D: 'var(--orange)', F: 'var(--critical)' };
+    return m[g?.[0]] || 'var(--text-secondary)';
+  }
+
+  function copyPath(text) {
+    navigator.clipboard.writeText(text).then(() => {
+      const t = $('#copyToast');
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1500);
+    });
+  }
+
+  const root = $('#report');
+
+  // 1. Header
+  const header = el('div', 'card header fade-in-up');
+  header.innerHTML = `
+    <div class="header-title">VIBE CODE HEALTH CHECK</div>
+    <div class="header-project">${esc(data.meta.projectName)}</div>
+    <div class="stack-pills" id="stackPills"></div>
+    <div class="stats-bar">
+      <span>\u{1F4C1} ${num(data.meta.files)} files</span>
+      <span>\u{1F4CA} ${num(data.meta.lines)} lines</span>
+      <span>\u{1F4E6} ${num(data.meta.dependencies)} dependencies</span>
+    </div>
+    <div class="meta-line">${esc(data.meta.date)} &middot; ${esc(data.meta.mode)}</div>
+  `;
+  root.appendChild(header);
+  const pillsC = header.querySelector('#stackPills');
+  (data.meta.stack || []).forEach(s => {
+    const p = el('span', 'pill', esc(s));
+    pillsC.appendChild(p);
+  });
+
+  // 2. Grade Hero
+  const gc = gradeColor(data.overall.grade);
+  const score = data.overall.score;
+  const circ = 2 * Math.PI * 78;
+  const offset = circ * (1 - score / 100);
+  const hero = el('div', 'card grade-hero fade-in-up');
+  hero.innerHTML = `
+    <div class="grade-circle-wrap">
+      <svg class="grade-svg" viewBox="0 0 180 180">
+        <circle class="grade-ring" cx="90" cy="90" r="78"/>
+        <circle class="grade-pulse" cx="90" cy="90" r="78" stroke="${gc}"/>
+        <circle class="grade-ring-fill" cx="90" cy="90" r="78"
+          stroke="${gc}"
+          stroke-dasharray="${circ}"
+          stroke-dashoffset="${circ}"
+          data-target="${offset}"/>
+        <text class="grade-letter" x="90" y="90" text-anchor="middle" dominant-baseline="central"
+          fill="${gc}">${esc(data.overall.grade)}</text>
+      </svg>
+    </div>
+    <div class="grade-score" style="color:${gc}">${score} <span>/ 100</span></div>
+  `;
+  root.appendChild(hero);
+
+  // 3. Build Status
+  if (data.build) {
+    const bc = el('div', 'card fade-in-up');
+    const passed = data.build.passed;
+    let bhtml = `<div class="build-status">
+      <span class="build-icon">${passed ? '\u2705' : '\u{1F6A8}'}</span>
+      <span>Build ${passed ? 'passed' : 'failed'}</span>
+    </div>`;
+    if (data.build.command) bhtml += `<div class="build-cmd">${esc(data.build.command)}</div>`;
+    if (!passed && data.build.errors && data.build.errors.length) {
+      bhtml += `<div class="build-errors">${data.build.errors.map(e => esc(e)).join('\n')}</div>`;
+    }
+    if (data.build.warnings && data.build.warnings.length) {
+      bhtml += `<div class="build-warnings">\u26A0\uFE0F ${data.build.warnings.length} warning(s)</div>`;
+    }
+    bc.innerHTML = bhtml;
+    root.appendChild(bc);
+  }
+
+  // 4. Dimensions
+  const dimCard = el('div', 'card fade-in-up');
+  dimCard.innerHTML = '<div class="section-title">\u{1F4CA} Dimension Breakdown</div>';
+  (data.dimensions || []).forEach(d => {
+    const row = el('div', 'dim-row');
+    const col = scoreColor(d.score);
+    row.innerHTML = `
+      <div class="dim-name">${esc(d.name)}</div>
+      <div class="dim-weight">${Math.round(d.weight * 100)}%</div>
+      <div class="dim-bar-wrap"><div class="dim-bar" data-score="${d.score}" style="background:${col}"></div></div>
+      <div class="dim-score" style="color:${col}">${d.score}</div>
+      ${d.critical ? '<div class="dim-badge">!!</div>' : ''}
+    `;
+    dimCard.appendChild(row);
+  });
+  root.appendChild(dimCard);
+
+  // 5-7. Findings
+  const severities = [
+    { key: 'critical', label: '\u{1F6A8} Critical Issues', color: 'var(--critical)', cls: 'critical' },
+    { key: 'warnings', label: '\u26A0\uFE0F Warnings', color: 'var(--warning)', cls: 'warning' },
+    { key: 'suggestions', label: '\u{1F4A1} Suggestions', color: 'var(--suggestion)', cls: 'suggestion' }
+  ];
+  let fNum = 0;
+  severities.forEach(sev => {
+    const items = (data.findings && data.findings[sev.key]) || [];
+    if (!items.length) return;
+    const sec = el('div', 'findings-section fade-in-up');
+    const collapsible = sev.key !== 'critical' && items.length > 5;
+    sec.innerHTML = `
+      <div class="findings-header${collapsible ? '' : ''}" data-toggle="${sev.key}">
+        <span style="color:${sev.color}">${sev.label}</span>
+        <span class="findings-count" style="background:${sev.color}20;color:${sev.color}">${items.length}</span>
+        ${collapsible ? '<span class="chevron">\u25BC</span>' : ''}
+      </div>
+    `;
+    const list = el('div', 'findings-list');
+    list.id = 'list-' + sev.key;
+    items.forEach(f => {
+      fNum++;
+      const fc = el('div', 'finding-card ' + sev.cls);
+      let fh = `<div class="finding-num" style="color:${sev.color}">#${fNum}</div>`;
+      fh += `<div class="finding-title">${esc(f.title)}</div>`;
+      if (f.description) fh += `<div class="finding-desc">${esc(f.description)}</div>`;
+      if (f.file) fh += `<div class="finding-file" onclick="copyPath('${escAttr(f.file)}')" title="Click to copy"><span>${esc(f.file)}</span><span class="copy-icon">\u{1F4CB}</span></div>`;
+      if (f.fix) fh += `<div class="finding-fix"><strong>Fix:</strong> ${esc(f.fix)}</div>`;
+      if (f.effort) fh += `<span class="effort-pill">${esc(f.effort)}</span>`;
+      fc.innerHTML = fh;
+      list.appendChild(fc);
+    });
+    sec.appendChild(list);
+    root.appendChild(sec);
+
+    if (collapsible) {
+      const hdr = sec.querySelector('.findings-header');
+      hdr.style.cursor = 'pointer';
+      hdr.addEventListener('click', () => {
+        hdr.classList.toggle('collapsed');
+        list.classList.toggle('collapsed');
+      });
+    }
+  });
+
+  // 8. Stats
+  if (data.stats) {
+    const st = data.stats;
+    const sc = el('div', 'card fade-in-up');
+    sc.innerHTML = '<div class="section-title">\u{1F4CA} Code Stats</div>';
+    const grid = el('div', 'stats-grid');
+
+    // console.log
+    const clc = st.consoleLogCount || 0;
+    const clCol = clc <= 10 ? 'var(--accent)' : clc <= 50 ? 'var(--warning)' : 'var(--critical)';
+    grid.appendChild(mkStat('\u{1F4DD}', clc, 'console.log', clCol));
+    grid.appendChild(mkStat('\u{1F4C4}', (st.oversizedFiles || []).length, 'oversized files', (st.oversizedFiles||[]).length ? 'var(--warning)' : 'var(--accent)', st.oversizedFiles));
+    grid.appendChild(mkStat('\u{1F50D}', st.selectStarCount || 0, 'SELECT *', (st.selectStarCount||0) > 0 ? 'var(--warning)' : 'var(--accent)'));
+    grid.appendChild(mkStat('\u{1F5BC}\uFE0F', st.rawImgCount || 0, 'raw <img>', (st.rawImgCount||0) > 0 ? 'var(--warning)' : 'var(--accent)'));
+    grid.appendChild(mkStat('\u{1F4CC}', st.todoCount || 0, 'TODO comments', (st.todoCount||0) > 10 ? 'var(--warning)' : 'var(--accent)'));
+
+    sc.appendChild(grid);
+    root.appendChild(sc);
+  }
+
+  // 9. Live Test
+  const lt = data.liveTest;
+  if (lt) {
+    const lc = el('div', 'card fade-in-up');
+    if (lt.performed) {
+      let lh = '<div class="section-title">\u{1F310} Live Test Results</div>';
+      if (lt.url) lh += `<a class="live-url" href="${escAttr(lt.url)}" target="_blank">${esc(lt.url)}</a>`;
+      if (lt.observations && lt.observations.length) {
+        lh += '<ul class="live-obs">' + lt.observations.map(o => `<li>${esc(o)}</li>`).join('') + '</ul>';
+      }
+      if (lt.consoleErrors && lt.consoleErrors.length) {
+        lh += `<div class="live-console">${lt.consoleErrors.map(e => esc(e)).join('\n')}</div>`;
+      }
+      lc.innerHTML = lh;
+    } else {
+      lc.innerHTML = '<div class="section-title">\u{1F310} Live Test</div><div class="live-none">Live testing not performed \u2014 install Playwright CLI for live testing.</div>';
+    }
+    root.appendChild(lc);
+  }
+
+  // 10. Path to Next Grade
+  if (data.improvement && data.improvement.steps && data.improvement.steps.length) {
+    const imp = data.improvement;
+    const pc = el('div', 'card fade-in-up');
+    const cgc = gradeColor(imp.currentGrade);
+    const ngc = gradeColor(imp.nextGrade);
+    pc.innerHTML = `
+      <div class="section-title">\u{1F680} Path to Next Grade</div>
+      <div class="path-header">
+        <span class="path-grade" style="background:${cgc}22;color:${cgc}">${esc(imp.currentGrade)}</span>
+        <span class="path-arrow">\u2192</span>
+        <span class="path-grade" style="background:${ngc}22;color:${ngc}">${esc(imp.nextGrade)}</span>
+      </div>
+      <div class="path-steps" id="pathSteps"></div>
+      <div class="path-summary" id="pathSummary"></div>
+    `;
+    root.appendChild(pc);
+
+    const ps = pc.querySelector('#pathSteps');
+    imp.steps.forEach(s => {
+      const step = el('div', 'path-step');
+      step.innerHTML = `
+        <div class="path-action">${esc(s.action)}</div>
+        <div class="path-meta">
+          <span>${esc(s.dimension)}: ${s.currentScore} \u2192 ${s.projectedScore}</span>
+          <span>\u23F1 ${esc(s.time)}</span>
+        </div>
+      `;
+      ps.appendChild(step);
+    });
+
+    const psum = pc.querySelector('#pathSummary');
+    psum.innerHTML = `
+      <div class="path-summary-item"><span>Estimated Time</span><strong>${esc(imp.estimatedTime)}</strong></div>
+      <div class="path-summary-item"><span>Projected Score</span><strong style="color:${scoreColor(imp.projectedScore)}">${imp.projectedScore}</strong></div>
+      <div class="path-summary-item"><span>Projected Grade</span><strong style="color:${gradeColor(imp.projectedGrade)}">${esc(imp.projectedGrade)}</strong></div>
+    `;
+  }
+
+  // 11. Footer
+  const footer = el('div', 'footer');
+  footer.innerHTML = `Checked by <strong>Vibe Code Health Check</strong> &middot; <a href="https://github.com/tomer-ezri/vibe-code-health-check" target="_blank">github.com/tomer-ezri/vibe-code-health-check</a><br>${esc(data.meta.date)}`;
+  root.appendChild(footer);
+
+  // --- Helpers ---
+  function mkStat(icon, number, label, color, listData) {
+    const c = el('div', 'stat-card');
+    let h = `<div class="stat-icon">${icon}</div><div class="stat-number" style="color:${color}">${number}</div><div class="stat-label">${label}</div>`;
+    if (listData && listData.length) {
+      h += '<div class="stat-list">' + listData.map(f => `<div><span>${esc(f.path)}</span><span>${f.lines}L</span></div>`).join('') + '</div>';
+    }
+    c.innerHTML = h;
+    return c;
+  }
+
+  function esc(s) {
+    if (s == null) return '';
+    const d = document.createElement('div');
+    d.textContent = String(s);
+    return d.innerHTML;
+  }
+
+  function escAttr(s) {
+    return esc(s).replace(/'/g, "\\'");
+  }
+
+  function num(n) {
+    return (n || 0).toLocaleString();
+  }
+
+  // --- Animations ---
+  // Scroll observer
+  const obs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.classList.add('visible');
+        obs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.fade-in-up').forEach(el => obs.observe(el));
+
+  // Animate dimension bars after visible
+  const dimObs = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.querySelectorAll('.dim-bar').forEach(bar => {
+          setTimeout(() => { bar.style.width = bar.dataset.score + '%'; }, 200);
+        });
+        dimObs.unobserve(e.target);
+      }
+    });
+  }, { threshold: 0.2 });
+  document.querySelectorAll('.dim-row').forEach(r => dimObs.observe(r.closest('.card')));
+
+  // Animate grade ring
+  setTimeout(() => {
+    const ring = document.querySelector('.grade-ring-fill');
+    if (ring) ring.style.strokeDashoffset = ring.dataset.target;
+  }, 500);
+
+  // Expose copyPath globally
+  window.copyPath = copyPath;
+})();
+</script>
+</body>
+</html>
