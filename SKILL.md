@@ -41,47 +41,42 @@ Everything is explained in plain English — not developer jargon.
 You don't need to be a senior developer to understand the report.
 ```
 
-### Install Dependencies
+### Startup Sequence (Tool Detection + Context Questions)
 
-```
-NO TOOLS REQUIRED — I read your code directly.
+At the start of every run, do these **in parallel**:
 
-RECOMMENDED:
-  Playwright CLI skill (tests your app like a real user would)
-    Install: npx skills add lackeyjb/playwright-skill --skill playwright-skill
-    Repo:    https://github.com/lackeyjb/playwright-skill
+**A. Background Tool Detection (run silently while asking questions):**
 
-OPTIONAL:
-  Chrome DevTools MCP (checks browser console errors + page speed)
-    Install: claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest
-    Repo:    https://github.com/ChromeDevTools/chrome-devtools-mcp
+Search for these tools/MCPs without blocking the user:
 
-SPEED BOOST:
-  Agent Teams mode lets me run all 6 checks at the same time.
-  Enable: export CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1
-  Docs:   https://code.claude.com/docs/en/agent-teams
-```
+| Tool | What it does | How to detect |
+|------|-------------|---------------|
+| Playwright CLI skill | Tests the app like a real user would | Check if `playwright-cli` commands are available |
+| Chrome DevTools MCP | Console errors + page speed metrics | Check if `mcp__chrome-devtools__*` tools are available |
 
-### Context Questions (BEFORE scanning)
-
-Ask these before starting any analysis:
+**B. Context Questions (ask immediately, don't wait for tool detection):**
 
 1. **What does your app do?** (1 sentence)
 2. **Is it deployed somewhere?** (URL, so I can test it live)
 3. **Are you planning to launch this, or is it a side project?**
 
+**Skip any question** where the answer is already known from Claude's memory, prior conversations, or information the user provided in their initial message. If ALL answers are already known, confirm them briefly and proceed.
+
+**Wait for the user to answer all remaining questions before starting any analysis.**
+
 These answers affect scoring — a side project and a production app have different readiness standards.
 
----
+### Tool Detection Results (after background check completes)
 
-## Tool Detection + Fallback Chain
+Once background detection finishes AND user has answered context questions:
 
-At the start of **every run**, detect available tools:
-
-### Live Testing (pick first available)
-1. **Playwright CLI** — Best. Tests the app like a real user would.
-2. **Chrome DevTools MCP** — Good. Console errors + page speed metrics.
-3. **None available** — Code-only analysis. Announce: "I can't test your live app. Install Playwright CLI for live testing."
+1. **If all recommended tools are available** → Announce tools and proceed to analysis.
+2. **If some tools are missing** → Tell the user which tools are missing, what they enable, and ask:
+   "Would you like help installing the missing tools? Or should I continue without them?"
+   - **If yes** → Provide install commands one by one and guide them through setup:
+     - Playwright CLI: `npx skills add lackeyjb/playwright-skill --skill playwright-skill`
+     - Chrome DevTools: `claude mcp add chrome-devtools -- npx -y chrome-devtools-mcp@latest`
+   - **If no** → Continue, but announce: "Proceeding without [tool]. The report may not cover [what's missing — e.g., 'live user testing' without Playwright]."
 
 ### Announce to User
 
@@ -267,11 +262,22 @@ Estimated time: [TOTAL]
 Expected new grade: [PROJECTED] ([SCORE]/100)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Checked by Vibe Code Health Check
-github.com/tomer-ezri/vibe-code-health-check
+Checked by Vibe Code Health Check — By Tomer & Guy
+github.com/FuzulsFriend
 ```
 
 See `assets/report-template.md` for the full template with all fields.
+
+### Phase 5.5: USER REVIEW (before visual report)
+
+After completing the text report (Phase 5), present it to the user and ask:
+
+**"Here's the full health check. Would you like to change anything, or should I generate the visual report?"**
+
+Wait for the user's response:
+- **If user requests changes** → Apply the changes to scores/findings/recommendations, update the text report, and ask again.
+- **If user approves** → Proceed to Phase 6 (visual report generation).
+- **If user says nothing specific** → Treat as approval and proceed to Phase 6.
 
 ### Phase 6: VISUAL REPORT (browser preview)
 

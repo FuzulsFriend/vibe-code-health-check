@@ -64,8 +64,8 @@ Estimated time: [TOTAL]
 Expected new grade: [PROJECTED_GRADE] ([PROJECTED_SCORE]/100)
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Checked by Vibe Code Health Check
-github.com/tomer-ezri/vibe-code-health-check
+Checked by Vibe Code Health Check — By Tomer & Guy
+github.com/FuzulsFriend
 \`\`\`
 
 ---
